@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpileOnly --ignore-watch node_modules --no-notify src/index.ts"
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpileOnly --ignore-watch node_modules --no-notify src/app.ts"
   },
   "devDependencies": {
     "@types/express": "^4.17.9",

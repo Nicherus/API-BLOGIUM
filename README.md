@@ -1,1 +1,1 @@
-# 11-api-blogium
+To run the project just enter "yarn dev"
