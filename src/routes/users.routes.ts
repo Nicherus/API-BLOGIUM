@@ -1,9 +1,28 @@
 import { Router } from 'express';
 
+import UsersRepository from '../repositories/UsersRepository';
+
 const usersRouter = Router();
+const usersRepository = new UsersRepository();
 
 usersRouter.post('/sign-up', (request, response) => {
-	return response.send('POST SIGN UP');
+	const { email, username, avatarUrl, biography, password, passwordConfirmation} = request.body;
+
+	const validation = usersRepository.validateUser(email, username, avatarUrl, biography, password, passwordConfirmation);
+	const { error } = validation;
+
+	const userIsInDatabase = usersRepository.isInDatabase(username, email);
+
+	if(userIsInDatabase){
+		return response.status(409);
+	}
+	
+	if(error == null){
+		const user = usersRepository.createUser(email, username, avatarUrl, biography, password);
+		response.status(201).json(user);
+	}
+	
+	response.status(422);
 });
 
 usersRouter.post('/sign-in', (request, response) => {
