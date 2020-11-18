@@ -1,8 +1,15 @@
 import { Router } from 'express';
 
+import PostsRepository from '../repositories/PostsRepository';
+
 const postsRouter = Router();
+const postsRepository = new PostsRepository();
 
 postsRouter.post('/', (request, response) => {
+	const {coverUrl, title, content};
+
+	
+
 	return response.send('POST POST');
 });
 

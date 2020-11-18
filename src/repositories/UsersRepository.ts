@@ -53,7 +53,7 @@ class UsersRepository {
     	avatarUrl: string, 
     	biography: string, 
     	password: string,
-	) : User | number {
+	) : User {
             
     	this.userId++;
     	const user = new User(this.userId, email, username, avatarUrl, biography, password);
