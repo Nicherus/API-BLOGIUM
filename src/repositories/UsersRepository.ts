@@ -26,9 +26,9 @@ class UsersRepository {
     }
 
     public isInDatabase(username: string, email: string) : boolean {
-    	// const contains = this.users.some(e => e.username === username || e.email === email);
+    	const contains = this.users.some(e => e.username === username || e.email === email);
         
-    	return false; //mudar
+    	return contains; 
     }
 
     public validateUser(
@@ -43,10 +43,10 @@ class UsersRepository {
 
     	const schema = joi.object({
     		email: joi.string().email().required(),
-    		username: joi.string().alphanum().min(6).max(10).required(),
+    		username: joi.string().alphanum().min(6).max(10).regex(/^[a-zA-Z0-9.]*$/).required(),
     		avatarUrl: joi.string().uri().required(),
     		biography: joi.string().min(50).max(300),
-    		password: joi.string().min(6).regex(/^[a-zA-Z0-9]{1,30}$/).required(),
+    		password: joi.string().min(6).regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,10}$/).required(),
     		passwordConfirmation: joi.ref('password'),
     	}).unknown();
         

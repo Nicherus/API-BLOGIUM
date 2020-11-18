@@ -14,15 +14,15 @@ usersRouter.post('/sign-up', (request, response) => {
 	const userIsInDatabase = usersRepository.isInDatabase(username, email);
 
 	if(userIsInDatabase){
-		return response.status(409);
+		return response.status(409).send('Username or Email already on the database');
 	}
 	
 	if(error == null){
 		const user = usersRepository.createUser(email, username, avatarUrl, biography, password);
-		response.status(201).json(user);
+		return response.status(201).json(user);
 	}
 	
-	response.status(422);
+	return response.status(422).send('Please, send only valid fields');
 });
 
 usersRouter.post('/sign-in', (request, response) => {
