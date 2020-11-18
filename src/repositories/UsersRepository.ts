@@ -6,6 +6,7 @@ class UsersRepository {
     private users: User[];
 	private userId = 0;
 	public sessionToken = '0';
+	public sessionUserId = 0;
 
 	constructor(){
 		this.users = [];
@@ -69,6 +70,7 @@ class UsersRepository {
 		if(contains){
 			this.sessionToken = uuid();
 			const userIndex = this.users.findIndex(e => e.email === email);
+			this.sessionUserId = this.users[userIndex].id;
 			return ({
 				id: this.users[userIndex].id,
 				email: this.users[userIndex].email,
@@ -81,6 +83,11 @@ class UsersRepository {
 			return contains;
 		}
 
+	}
+
+	public getUserData() : User {
+		const userIndex = this.users.findIndex(e => e.id === this.sessionUserId);
+		return (this.users[userIndex]);
 	}
 }
 

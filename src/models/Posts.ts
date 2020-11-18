@@ -1,20 +1,22 @@
 
+import dayjs from 'dayjs';
 class Post {
     id: number;
 	title: string;
 	coverUrl: string;
-	contentPreview?: string;
 	content: string;
-	publishedAt?: string;
+	contentPreview?: string;
+	publishedAt?: dayjs.Dayjs;
 	authorId?: number;
 
 	constructor(
 		id: number,
 		title: string, 
-		contentPreview: string, 
 		coverUrl: string, 
 		content: string, 
-		publishedAt: string,
+		contentPreview: string, 
+		publishedAt: dayjs.Dayjs,
+		authorId: number,
 	){
 		this.id = id;
 		this.title = title;
@@ -22,6 +24,7 @@ class Post {
 		this.publishedAt = publishedAt;
 		this.coverUrl = coverUrl;
 		this.content = content;
+		this.authorId = authorId;
 	}
 }
 

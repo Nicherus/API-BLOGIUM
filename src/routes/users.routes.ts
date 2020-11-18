@@ -1,9 +1,14 @@
 import { Router } from 'express';
 
+import User from '../models/User';
 import UsersRepository from '../repositories/UsersRepository';
 
 const usersRouter = Router();
 const usersRepository = new UsersRepository();
+
+export const getUserData = (): User => {
+	return usersRepository.getUserData();
+};
 
 usersRouter.post('/sign-up', (request, response) => {
 	const { email, username, avatarUrl, biography, password, passwordConfirmation} = request.body;
