@@ -1,1 +1,1 @@
-To run the project just enter "yarn dev"
+To run the project just enter "yarn && yarn dev"
