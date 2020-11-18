@@ -26,7 +26,16 @@ usersRouter.post('/sign-up', (request, response) => {
 });
 
 usersRouter.post('/sign-in', (request, response) => {
-	response.status(200).send('POST SIGN IN');
+	const {email, password} = request.body;
+
+	const login = usersRepository.login(email, password);
+
+	if(login){
+		return response.status(200).send(login);
+	} else{
+		return response.status(401).send('User not found or wrong password');
+	}
+
 });
 
 usersRouter.get('/:id/posts', (request, response) => {
@@ -34,7 +43,7 @@ usersRouter.get('/:id/posts', (request, response) => {
 });
 
 usersRouter.put('/', (request, response) => {
-	response.status(200).send('PUT UPDATE USER');
+	return  response.status(200).send('PUT UPDATE USER');
 });
 
 

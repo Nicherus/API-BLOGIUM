@@ -1,4 +1,3 @@
-// import { v4 as uuid } from 'uuid';
 
 class User {
     id: number;
@@ -7,6 +6,7 @@ class User {
 	avatarUrl: string;
 	biography: string;
 	password?: string;
+	token?: string;
 
 	constructor(
 		id: number,
@@ -16,7 +16,6 @@ class User {
 		biography: string, 
 		password: string,
 	){
-		// this.id = uuid();
 		this.id = id;
 		this.email = email;
 		this.username = username;
