@@ -1,5 +1,6 @@
 
 import dayjs from 'dayjs';
+import User from './User';
 class Post {
     id: number;
 	title: string;
@@ -7,7 +8,8 @@ class Post {
 	content: string;
 	contentPreview?: string;
 	publishedAt?: dayjs.Dayjs;
-	authorId?: number;
+	authorId: number;
+	author?: User;
 
 	constructor(
 		id: number,

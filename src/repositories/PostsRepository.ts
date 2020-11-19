@@ -47,6 +47,10 @@ class PostsRepository {
 		return post;
 	}
 
+	public getPosts() : Post[]{
+		return this.posts;
+	}
+
 }
 
 export default PostsRepository;

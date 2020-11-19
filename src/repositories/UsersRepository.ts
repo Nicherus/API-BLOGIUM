@@ -85,8 +85,12 @@ class UsersRepository {
 
 	}
 
-	public getUserData() : User {
-		const userIndex = this.users.findIndex(e => e.id === this.sessionUserId);
+	public getLoggedUserData() : User {
+		return this.getUserData(this.sessionUserId);
+	}
+
+	public getUserData(id : number) : User {
+		const userIndex = this.users.findIndex(e => e.id === id);
 		return (this.users[userIndex]);
 	}
 }

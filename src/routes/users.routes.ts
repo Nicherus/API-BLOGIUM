@@ -6,8 +6,12 @@ import UsersRepository from '../repositories/UsersRepository';
 const usersRouter = Router();
 const usersRepository = new UsersRepository();
 
-export const getUserData = (): User => {
-	return usersRepository.getUserData();
+export const getLoggedUserData = (): User => {
+	return usersRepository.getLoggedUserData();
+};
+
+export const getUserData = (id : number): User => {
+	return usersRepository.getUserData(id);
 };
 
 usersRouter.post('/sign-up', (request, response) => {

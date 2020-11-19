@@ -1,7 +1,7 @@
 
 class User {
     id: number;
-	email: string;
+	email?: string;
 	username: string;
 	avatarUrl: string;
 	biography: string;

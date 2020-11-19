@@ -1,7 +1,8 @@
-import { getUserData } from './users.routes';
+import { getUserData, getLoggedUserData } from './users.routes';
 import { Router } from 'express';
 
 import PostsRepository from '../repositories/PostsRepository';
+import Post from 'src/models/Posts';
 
 const postsRouter = Router();
 const postsRepository = new PostsRepository();
@@ -14,8 +15,7 @@ postsRouter.post('/', (request, response) => {
 
 	if(error == null){
 		const post = postsRepository.createPost(coverUrl, title, content, 1);
-		console.log(post);
-		const user = getUserData();
+		const user = getLoggedUserData();
 		
 		const postData = {
 			'id': post.id,
@@ -37,7 +37,21 @@ postsRouter.post('/', (request, response) => {
 });
 
 postsRouter.get('/', (request, response) => {
-	return response.send('GET POSTS');
+	const posts = JSON.parse(JSON.stringify(postsRepository.getPosts()));
+	const constructedPosts = posts.map((p: Post) => {
+		const author = getUserData(p.authorId);
+		p.author = {
+			'id': author.id,
+			'username': author.username,
+			'avatarUrl': author.avatarUrl,
+			'biography': author.biography,
+		};
+		return p;
+	});
+	return response.status(201).send({
+		'count': constructedPosts.length,
+		'posts': [...constructedPosts],
+	});
 });
 
 postsRouter.get('/:id', (request, response) => {
