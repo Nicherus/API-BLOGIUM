@@ -37,8 +37,9 @@ postsRouter.post('/', (request, response) => {
 });
 
 postsRouter.get('/', (request, response) => {
+	const { offset, limit} = request.query;
 	const posts = JSON.parse(JSON.stringify(postsRepository.getPosts()));
-	const constructedPosts = posts.map((p: Post) => {
+	let constructedPosts = posts.map((p: Post) => {
 		const author = getUserData(p.authorId);
 		p.author = {
 			'id': author.id,
@@ -48,6 +49,7 @@ postsRouter.get('/', (request, response) => {
 		};
 		return p;
 	});
+	constructedPosts = constructedPosts.slice(offset, limit); 
 	return response.status(201).send({
 		'count': constructedPosts.length,
 		'posts': [...constructedPosts],
