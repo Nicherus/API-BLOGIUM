@@ -7,6 +7,10 @@ import Post from 'src/models/Posts';
 const postsRouter = Router();
 const postsRepository = new PostsRepository();
 
+export const getPosts = () : Post[] => {
+	return postsRepository.getPosts();
+};
+
 postsRouter.post('/', (request, response) => {
 	const {coverUrl, title, content} = request.body;
 
@@ -30,6 +34,7 @@ postsRouter.post('/', (request, response) => {
 				'biography': user.biography,
 			}
 		};
+
 		return response.status(201).send(postData);
 	} else{
 		return response.status(422).send('Oops! Please, check the data you are sending.');
@@ -41,6 +46,8 @@ postsRouter.get('/', (request, response) => {
 	const posts = JSON.parse(JSON.stringify(postsRepository.getPosts()));
 	let constructedPosts = posts.map((p: Post) => {
 		const author = getUserData(p.authorId);
+		delete p.authorId;
+		delete p.content;
 		p.author = {
 			'id': author.id,
 			'username': author.username,
@@ -50,13 +57,31 @@ postsRouter.get('/', (request, response) => {
 		return p;
 	});
 	constructedPosts = constructedPosts.slice(offset, limit); 
-	return response.status(201).send({
+	return response.status(200).send({
 		'count': constructedPosts.length,
 		'posts': [...constructedPosts],
 	});
 });
 
-postsRouter.get('/:id', (request, response) => {
+postsRouter.get('/:id', (request, response) => {	
+	// const { offset, limit} = request.query;
+	// let posts = JSON.parse(JSON.stringify(getPosts()));
+	// const loggedUser = getLoggedUserData();
+	// posts = posts.filter((p: Post) => p.authorId === loggedUser.id);
+	// posts = posts.map((p: Post) => {
+	// 	p.author = {
+	// 		'id': loggedUser.id,
+	// 		'username': loggedUser.username,
+	// 		'avatarUrl': loggedUser.avatarUrl,
+	// 		'biography': loggedUser.biography,
+	// 	};
+	// 	return p;
+	// });
+	// const filteredPosts = posts.slice(offset, limit); 
+	// return response.status(200).send({
+	// 	'count': posts.length,
+	// 	'posts': [...filteredPosts],
+	// });
 	return response.status(200).send(`GET POSTS BY POST ID${request.params.id}`);
 });
 

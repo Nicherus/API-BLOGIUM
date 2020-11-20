@@ -1,6 +1,8 @@
+import { getPosts } from './posts.routes';
 import { Router } from 'express';
 
 import User from '../models/User';
+import Post from '../models/Posts';
 import UsersRepository from '../repositories/UsersRepository';
 
 const usersRouter = Router();
@@ -10,7 +12,7 @@ export const getLoggedUserData = (): User => {
 	return usersRepository.getLoggedUserData();
 };
 
-export const getUserData = (id : number): User => {
+export const getUserData = (id : number | undefined ): User => {
 	return usersRepository.getUserData(id);
 };
 
@@ -48,7 +50,28 @@ usersRouter.post('/sign-in', (request, response) => {
 });
 
 usersRouter.get('/:id/posts', (request, response) => {
-	return response.status(200).send(`GET POSTS BY USER ID${request.params.id}`);
+	const { offset, limit} = request.query;
+	let posts = JSON.parse(JSON.stringify(getPosts()));
+	const user = getUserData(JSON.parse(request.params.id));
+	posts = posts.filter((p: Post) => p.authorId === user.id);
+	delete posts.content;
+	delete posts.authorId;
+	posts = posts.map((p: Post) => {
+		delete p.authorId;
+		delete p.content;
+		p.author = {
+			'id': user.id,
+			'username': user.username,
+			'avatarUrl': user.avatarUrl,
+			'biography': user.biography,
+		};
+		return p;
+	});
+	const filteredPosts = posts.slice(offset, limit); 
+	return response.status(200).send({
+		'count': posts.length,
+		'posts': [...filteredPosts],
+	});
 });
 
 usersRouter.put('/', (request, response) => {

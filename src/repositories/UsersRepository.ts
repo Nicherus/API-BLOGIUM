@@ -1,3 +1,4 @@
+import { getLoggedUserData } from './../routes/users.routes';
 import User from '../models/User';
 import { v4 as uuid } from 'uuid';
 import joi from 'joi';
@@ -89,7 +90,7 @@ class UsersRepository {
 		return this.getUserData(this.sessionUserId);
 	}
 
-	public getUserData(id : number) : User {
+	public getUserData(id : number | undefined) : User {
 		const userIndex = this.users.findIndex(e => e.id === id);
 		return (this.users[userIndex]);
 	}

@@ -5,10 +5,10 @@ class Post {
     id: number;
 	title: string;
 	coverUrl: string;
-	content: string;
+	content?: string;
 	contentPreview?: string;
 	publishedAt?: dayjs.Dayjs;
-	authorId: number;
+	authorId?: number;
 	author?: User;
 
 	constructor(
