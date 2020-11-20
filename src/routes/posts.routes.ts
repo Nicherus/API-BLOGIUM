@@ -35,7 +35,7 @@ postsRouter.post('/', (request, response) => {
 			}
 		};
 
-		return response.status(201).send(postData);
+		return response.status(201).json(postData);
 	} else{
 		return response.status(422).send('Oops! Please, check the data you are sending.');
 	}
@@ -57,7 +57,7 @@ postsRouter.get('/', (request, response) => {
 		return p;
 	});
 	constructedPosts = constructedPosts.slice(offset, limit); 
-	return response.status(200).send({
+	return response.status(200).json({
 		'count': constructedPosts.length,
 		'posts': [...constructedPosts],
 	});
@@ -69,7 +69,7 @@ postsRouter.get('/:id', (request, response) => {
 	const author = getUserData(post[0].authorId);
 	delete post[0].authorId;
 	delete post[0].contentPreview;
-	return response.status(200).send({
+	return response.status(200).json({
 		...post[0],
 		'author': {
 			'id': author.id,
@@ -108,7 +108,7 @@ postsRouter.put('/:id', (request, response) => {
 
 		postsRepository.updatePost(postId, coverUrl, title, content);
 
-		return response.status(201).send(postData);
+		return response.status(201).json(postData);
 	} else{
 		return response.status(422).send('Oops! Please, check the data you are sending.');
 	}

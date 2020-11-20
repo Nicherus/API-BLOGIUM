@@ -27,7 +27,7 @@ usersRouter.post('/sign-up', (request, response) => {
 	if(userIsInDatabase){
 		return response.status(409).send('Username or Email already on the database');
 	}
-	
+
 	if(error == null){
 		const user = usersRepository.createUser(email, username, avatarUrl, biography, password);
 		return response.status(201).json(user);
@@ -42,7 +42,7 @@ usersRouter.post('/sign-in', (request, response) => {
 	const login = usersRepository.login(email, password);
 
 	if(login){
-		return response.status(200).send(login);
+		return response.status(200).json(login);
 	} else{
 		return response.status(401).send('User not found or wrong password');
 	}
@@ -68,14 +68,35 @@ usersRouter.get('/:id/posts', (request, response) => {
 		return p;
 	});
 	const filteredPosts = posts.slice(offset, limit); 
-	return response.status(200).send({
+	return response.status(200).json({
 		'count': posts.length,
 		'posts': [...filteredPosts],
 	});
 });
 
 usersRouter.put('/', (request, response) => {
-	return  response.status(200).send('PUT UPDATE USER');
+	const { username, avatarUrl, biography} = request.body;
+
+	const validation = usersRepository.validateEditUser(username, avatarUrl, biography);
+	const { error } = validation;
+
+	if(error == null){
+		const { id } = getLoggedUserData();
+		const user = usersRepository.editUserData(id, username, avatarUrl, biography);
+
+		const userData = {
+			'id': user.id,
+			'email': user.email,
+			'username': user.username,
+			'avatarUrl': user.avatarUrl,
+			'biography': user.biography,
+		};
+
+		return response.status(201).json(userData);
+	}
+
+	return response.status(422).send('Ops! check your fields and try again.');
+
 });
 
 
