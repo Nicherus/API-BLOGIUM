@@ -63,26 +63,22 @@ postsRouter.get('/', (request, response) => {
 	});
 });
 
-postsRouter.get('/:id', (request, response) => {	
-	// const { offset, limit} = request.query;
-	// let posts = JSON.parse(JSON.stringify(getPosts()));
-	// const loggedUser = getLoggedUserData();
-	// posts = posts.filter((p: Post) => p.authorId === loggedUser.id);
-	// posts = posts.map((p: Post) => {
-	// 	p.author = {
-	// 		'id': loggedUser.id,
-	// 		'username': loggedUser.username,
-	// 		'avatarUrl': loggedUser.avatarUrl,
-	// 		'biography': loggedUser.biography,
-	// 	};
-	// 	return p;
-	// });
-	// const filteredPosts = posts.slice(offset, limit); 
-	// return response.status(200).send({
-	// 	'count': posts.length,
-	// 	'posts': [...filteredPosts],
-	// });
-	return response.status(200).send(`GET POSTS BY POST ID${request.params.id}`);
+postsRouter.get('/:id', (request, response) => {
+	const posts = JSON.parse(JSON.stringify(getPosts()));
+	const post = posts.filter((p: Post) => p.id === JSON.parse(request.params.id));
+	const author = getUserData(post[0].authorId);
+	delete post[0].authorId;
+	delete post[0].contentPreview;
+	return response.status(200).send({
+		...post[0],
+		'author': {
+			'id': author.id,
+			'username': author.username,
+			'avatarUrl': author.avatarUrl,
+			'biography': author.biography,
+
+		}
+	});
 });
 
 postsRouter.put('/:id', (request, response) => {
