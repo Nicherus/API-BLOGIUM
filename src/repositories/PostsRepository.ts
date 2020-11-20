@@ -47,6 +47,10 @@ class PostsRepository {
 		return post;
 	}
 
+	public getPosts() : Post[]{
+		return this.posts;
+	}
+
 	public updatePost(
 		id: number,    	
 		coverUrl: string,
@@ -61,10 +65,10 @@ class PostsRepository {
 		this.posts[postIndex].contentPreview = contentPreview;
 	}
 
-	public getPosts() : Post[]{
-		return this.posts;
+	public deletePost(id: number) : void{
+		const postIndex = this.posts.findIndex(e => e.id === id);
+		this.posts.splice(postIndex, 1);
 	}
-
 }
 
 export default PostsRepository;

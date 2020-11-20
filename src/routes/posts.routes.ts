@@ -116,7 +116,17 @@ postsRouter.put('/:id', (request, response) => {
 });
 
 postsRouter.delete('/:id', (request, response) => {
-	return response.status(200).send(`DELETE POSTS BY POST ID${request.params.id}`);
+	const posts = JSON.parse(JSON.stringify(getPosts()));
+	const postId = JSON.parse(request.params.id);
+	const post = posts.filter((p: Post) => p.id === postId);
+	const loggedUser = getLoggedUserData();
+
+	if(post[0].authorId !== loggedUser.id){
+		return response.status(401).send('Oops! Check your credentials.');
+	} else {
+		postsRepository.deletePost(postId);
+		return response.status(200).send('Ok!');
+	}
 });
 
 export default postsRouter;
