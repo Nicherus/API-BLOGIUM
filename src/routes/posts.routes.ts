@@ -76,13 +76,43 @@ postsRouter.get('/:id', (request, response) => {
 			'username': author.username,
 			'avatarUrl': author.avatarUrl,
 			'biography': author.biography,
-
 		}
 	});
 });
 
 postsRouter.put('/:id', (request, response) => {
-	return response.status(200).send(`PUT UPDATE POSTS BY POST ID${request.params.id}`);
+	const {coverUrl, title, content} = request.body;
+	const posts = JSON.parse(JSON.stringify(getPosts()));
+	const postId = JSON.parse(request.params.id);
+	const post = posts.filter((p: Post) => p.id === postId);
+	const validation = postsRepository.validatePost(coverUrl, title, content);
+	const { error } = validation;
+	const loggedUser = getLoggedUserData();
+	
+	if(post[0].authorId !== loggedUser.id){
+		return response.status(401).send('Oops! Check your credentials.');
+	} else if(error == null){
+		const postData = {
+			'id': post.id,
+			'title': title,
+			'coverUrl': coverUrl,
+			'content': content,
+			'publishedAt': post.publishedAt,
+			'author': {
+				'id': post.authorId,
+				'username': loggedUser.username,
+				'avatarUrl': loggedUser.avatarUrl,
+				'biography': loggedUser.biography,
+			}
+		};
+
+		postsRepository.updatePost(postId, coverUrl, title, content);
+
+		return response.status(201).send(postData);
+	} else{
+		return response.status(422).send('Oops! Please, check the data you are sending.');
+	}
+
 });
 
 postsRouter.delete('/:id', (request, response) => {

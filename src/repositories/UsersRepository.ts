@@ -1,4 +1,3 @@
-import { getLoggedUserData } from './../routes/users.routes';
 import User from '../models/User';
 import { v4 as uuid } from 'uuid';
 import joi from 'joi';
@@ -83,7 +82,6 @@ class UsersRepository {
 		} else{
 			return contains;
 		}
-
 	}
 
 	public getLoggedUserData() : User {

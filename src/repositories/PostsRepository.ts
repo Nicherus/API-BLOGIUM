@@ -47,6 +47,20 @@ class PostsRepository {
 		return post;
 	}
 
+	public updatePost(
+		id: number,    	
+		coverUrl: string,
+    	title: string,
+		content: string,
+	) : void {
+		const postIndex = this.posts.findIndex(e => e.id === id);
+		const contentPreview = stripHtml(content.slice(0, 299)).result;
+		this.posts[postIndex].coverUrl = coverUrl;
+		this.posts[postIndex].title = title;
+		this.posts[postIndex].content = content;
+		this.posts[postIndex].contentPreview = contentPreview;
+	}
+
 	public getPosts() : Post[]{
 		return this.posts;
 	}
