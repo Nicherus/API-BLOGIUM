@@ -4,6 +4,7 @@ import { Router } from 'express';
 import User from '../models/User';
 import Post from '../models/Posts';
 import UsersRepository from '../repositories/UsersRepository';
+import Session from 'src/models/Sessions';
 
 const usersRouter = Router();
 const usersRepository = new UsersRepository();
@@ -14,6 +15,10 @@ export const getLoggedUserData = (): User => {
 
 export const getUserData = (id : number | undefined ): User => {
 	return usersRepository.getUserData(id);
+};
+
+export const validateToken = (token: string | undefined): Session | undefined => {
+	return usersRepository.validateToken(token);
 };
 
 usersRouter.post('/sign-up', (request, response) => {
@@ -51,11 +56,12 @@ usersRouter.post('/sign-in', (request, response) => {
 
 usersRouter.get('/:id/posts', (request, response) => {
 	const { offset, limit} = request.query;
+
 	let posts = JSON.parse(JSON.stringify(getPosts()));
 	const user = getUserData(JSON.parse(request.params.id));
+	
 	posts = posts.filter((p: Post) => p.authorId === user.id);
-	delete posts.content;
-	delete posts.authorId;
+	
 	posts = posts.map((p: Post) => {
 		delete p.authorId;
 		delete p.content;
@@ -74,14 +80,17 @@ usersRouter.get('/:id/posts', (request, response) => {
 	});
 });
 
-usersRouter.put('/', (request, response) => {
+usersRouter.put('/',(request, response) => {
 	const { username, avatarUrl, biography} = request.body;
-
+	
+	const token = request.headers['authorization'];
+	const sessionData =  usersRepository.validateToken(token);
+	
 	const validation = usersRepository.validateEditUser(username, avatarUrl, biography);
 	const { error } = validation;
 
-	if(error == null){
-		const { id } = getLoggedUserData();
+	if(error == null && sessionData){
+		const id = sessionData.id;
 		const user = usersRepository.editUserData(id, username, avatarUrl, biography);
 
 		const userData = {

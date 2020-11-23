@@ -1,19 +1,20 @@
-// import { getUserData } from './../routes/users.routes';
 import User from '../models/User';
+import Sessions from '../models/Sessions';
 import { v4 as uuid } from 'uuid';
 import joi from 'joi';
 import fs from 'fs';
 
-const USERSPATH = './src/repositories/users.json';
+const PATH = './src/repositories';
 
 class UsersRepository {
     private users: User[];
+	private sessions: Sessions[];
 	private userId = 0;
-	public sessionToken = '0';
 	public sessionUserId = 0;
 
 	constructor(){
-		this.users = JSON.parse(fs.readFileSync(USERSPATH, 'utf-8'));
+		this.users = JSON.parse(fs.readFileSync(PATH + '/users.json', 'utf-8'));
+		this.sessions = JSON.parse(fs.readFileSync(PATH + '/sessions.json', 'utf-8'));
 	}
 
 	public validateUser(
@@ -76,29 +77,37 @@ class UsersRepository {
     	const user = new User(this.userId, email, username, avatarUrl, biography, password);
 
 		this.users.push(user);
-		fs.writeFileSync(USERSPATH, JSON.stringify(this.users));
+		fs.writeFileSync(PATH + '/users.json', JSON.stringify(this.users));
 		
     	return user;
 	}
 
 	public login(email: string, password: string) : User | boolean {
-		const contains = this.users.some(e => e.email === email && e.password === password);
+		const user = this.users.find(e => e.email === email && e.password === password);
 
-		if(contains){
-			this.sessionToken = uuid();
-			const userIndex = this.users.findIndex(e => e.email === email);
-			this.sessionUserId = this.users[userIndex].id;
+		if(user){
+			const token = uuid();
+			this.sessions.push({ 
+				id: user.id, 
+				token: token, 
+			});
+			fs.writeFileSync(PATH + '/sessions.json', JSON.stringify(this.sessions));
 			return ({
-				id: this.users[userIndex].id,
-				email: this.users[userIndex].email,
-				username: this.users[userIndex].username,
-				avatarUrl: this.users[userIndex].avatarUrl,
-				biography: this.users[userIndex].biography,
-				token: this.sessionToken,
+				id: user.id,
+				email: user.email,
+				username: user.username,
+				avatarUrl: user.avatarUrl,
+				biography: user.biography,
+				token: token,
 			});
 		} else{
-			return contains;
+			return false;
 		}
+	}
+
+	public validateToken(token: string | undefined) : Sessions | undefined{
+		const valid = this.sessions.find(e => e.token == token);
+		return valid;
 	}
 
 	public getLoggedUserData() : User {
@@ -116,7 +125,7 @@ class UsersRepository {
 		this.users[userIndex].avatarUrl = avatarUrl;
 		this.users[userIndex].biography = biography;
 
-		fs.writeFileSync(USERSPATH, JSON.stringify(this.users));
+		fs.writeFileSync(PATH + '/users.json', JSON.stringify(this.users));
 		return this.users[userIndex];
 	}
 }

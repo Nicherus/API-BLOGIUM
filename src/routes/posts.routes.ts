@@ -1,4 +1,4 @@
-import { getUserData, getLoggedUserData } from './users.routes';
+import { getUserData, getLoggedUserData, validateToken } from './users.routes';
 import { Router } from 'express';
 
 import PostsRepository from '../repositories/PostsRepository';
@@ -13,13 +13,15 @@ export const getPosts = () : Post[] => {
 
 postsRouter.post('/', (request, response) => {
 	const {coverUrl, title, content} = request.body;
+	const token = request.headers['authorization'];
+	const sessionData =  validateToken(token);
 
 	const validation = postsRepository.validatePost(coverUrl, title, content);
 	const { error } = validation;
 
-	if(error == null){
-		const post = postsRepository.createPost(coverUrl, title, content, 1);
-		const user = getLoggedUserData();
+	if(error == null && sessionData){
+		const post = postsRepository.createPost(coverUrl, title, content, sessionData.id);
+		const user = getUserData(sessionData.id);
 		
 		const postData = {
 			'id': post.id,
@@ -84,12 +86,16 @@ postsRouter.put('/:id', (request, response) => {
 	const {coverUrl, title, content} = request.body;
 	const posts = JSON.parse(JSON.stringify(getPosts()));
 	const postId = JSON.parse(request.params.id);
+	const token = request.headers['authorization'];
+
 	const post = posts.filter((p: Post) => p.id === postId);
+
 	const validation = postsRepository.validatePost(coverUrl, title, content);
+	const sessionData =  validateToken(token);
 	const { error } = validation;
-	const loggedUser = getLoggedUserData();
+	const user = getUserData(sessionData?.id);
 	
-	if(post[0].authorId !== loggedUser.id){
+	if(post[0].authorId !== user.id){
 		return response.status(401).send('Oops! Check your credentials.');
 	} else if(error == null){
 		const postData = {
@@ -100,9 +106,9 @@ postsRouter.put('/:id', (request, response) => {
 			'publishedAt': post.publishedAt,
 			'author': {
 				'id': post.authorId,
-				'username': loggedUser.username,
-				'avatarUrl': loggedUser.avatarUrl,
-				'biography': loggedUser.biography,
+				'username': user.username,
+				'avatarUrl': user.avatarUrl,
+				'biography': user.biography,
 			}
 		};
 
@@ -118,15 +124,23 @@ postsRouter.put('/:id', (request, response) => {
 postsRouter.delete('/:id', (request, response) => {
 	const posts = JSON.parse(JSON.stringify(getPosts()));
 	const postId = JSON.parse(request.params.id);
-	const post = posts.filter((p: Post) => p.id === postId);
-	const loggedUser = getLoggedUserData();
+	const token = request.headers['authorization'];
 
-	if(post[0].authorId !== loggedUser.id){
-		return response.status(401).send('Oops! Check your credentials.');
-	} else {
-		postsRepository.deletePost(postId);
-		return response.status(200).send('Ok!');
+	const sessionData = validateToken(token);
+	const post = posts.filter((p: Post) => p.id === postId);
+
+	if(sessionData){
+		const user = getUserData(sessionData.id);
+		if(post[0].authorId !== user.id){
+			return response.status(401).send('Oops! Check your credentials.');
+		} else {
+			postsRepository.deletePost(postId);
+			return response.status(200).send('Ok!');
+		}
+	} else{
+		response.status(401).send('Please, check the data you are sending');
 	}
+
 });
 
 export default postsRouter;

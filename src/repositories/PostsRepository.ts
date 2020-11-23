@@ -11,6 +11,7 @@ class PostsRepository {
 
 	constructor(){
 		this.posts = JSON.parse(fs.readFileSync(POSTSPATH, 'utf-8'));
+		this.postId = this.posts.length;
 	}
 
 	public validatePost(coverUrl: string, title: string, content: string,) : joi.ValidationResult {
