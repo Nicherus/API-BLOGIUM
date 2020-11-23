@@ -2,13 +2,15 @@ import Post from '../models/Posts';
 import dayjs from 'dayjs';
 import joi from 'joi';
 import stripHtml from 'string-strip-html';
+import fs from 'fs';
 
+const POSTSPATH = './src/repositories/posts.json';
 class PostsRepository {
 	private posts: Post[];
 	private postId = 0;
 
 	constructor(){
-		this.posts = [];
+		this.posts = JSON.parse(fs.readFileSync(POSTSPATH, 'utf-8'));
 	}
 
 	public validatePost(coverUrl: string, title: string, content: string,) : joi.ValidationResult {
@@ -43,6 +45,7 @@ class PostsRepository {
 		const post = new Post(this.postId, title, coverUrl, content, contentPreview, publishedAt, authorId);
 
 		this.posts.push(post);
+		fs.writeFileSync(POSTSPATH, JSON.stringify(this.posts));
 
 		return post;
 	}
@@ -63,11 +66,13 @@ class PostsRepository {
 		this.posts[postIndex].title = title;
 		this.posts[postIndex].content = content;
 		this.posts[postIndex].contentPreview = contentPreview;
+		fs.writeFileSync(POSTSPATH, JSON.stringify(this.posts));
 	}
 
 	public deletePost(id: number) : void{
 		const postIndex = this.posts.findIndex(e => e.id === id);
 		this.posts.splice(postIndex, 1);
+		fs.writeFileSync(POSTSPATH, JSON.stringify(this.posts));
 	}
 }
 

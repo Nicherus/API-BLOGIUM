@@ -1,7 +1,10 @@
-import { getUserData } from './../routes/users.routes';
+// import { getUserData } from './../routes/users.routes';
 import User from '../models/User';
 import { v4 as uuid } from 'uuid';
 import joi from 'joi';
+import fs from 'fs';
+
+const USERSPATH = './src/repositories/users.json';
 
 class UsersRepository {
     private users: User[];
@@ -10,7 +13,7 @@ class UsersRepository {
 	public sessionUserId = 0;
 
 	constructor(){
-		this.users = [];
+		this.users = JSON.parse(fs.readFileSync(USERSPATH, 'utf-8'));
 	}
 
 	public validateUser(
@@ -72,8 +75,9 @@ class UsersRepository {
     	this.userId++;
     	const user = new User(this.userId, email, username, avatarUrl, biography, password);
 
-    	this.users.push(user);
-        
+		this.users.push(user);
+		fs.writeFileSync(USERSPATH, JSON.stringify(this.users));
+		
     	return user;
 	}
 
@@ -112,6 +116,7 @@ class UsersRepository {
 		this.users[userIndex].avatarUrl = avatarUrl;
 		this.users[userIndex].biography = biography;
 
+		fs.writeFileSync(USERSPATH, JSON.stringify(this.users));
 		return this.users[userIndex];
 	}
 }
