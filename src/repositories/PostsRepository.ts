@@ -4,7 +4,7 @@ import joi from 'joi';
 import stripHtml from 'string-strip-html';
 import fs from 'fs';
 
-const POSTSPATH = './src/repositories/posts.json';
+const POSTSPATH = './data/posts.json';
 class PostsRepository {
 	private posts: Post[];
 	private postId = 0;

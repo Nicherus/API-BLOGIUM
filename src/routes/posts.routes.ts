@@ -1,4 +1,4 @@
-import { getUserData, getLoggedUserData, validateToken } from './users.routes';
+import { getUserData, validateToken } from './users.routes';
 import { Router } from 'express';
 
 import PostsRepository from '../repositories/PostsRepository';

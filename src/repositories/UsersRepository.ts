@@ -4,17 +4,17 @@ import { v4 as uuid } from 'uuid';
 import joi from 'joi';
 import fs from 'fs';
 
-const PATH = './src/repositories';
+const PATH = './data';
 
 class UsersRepository {
     private users: User[];
 	private sessions: Sessions[];
 	private userId = 0;
-	public sessionUserId = 0;
 
 	constructor(){
 		this.users = JSON.parse(fs.readFileSync(PATH + '/users.json', 'utf-8'));
 		this.sessions = JSON.parse(fs.readFileSync(PATH + '/sessions.json', 'utf-8'));
+		this.userId = this.users.length;
 	}
 
 	public validateUser(
@@ -108,10 +108,6 @@ class UsersRepository {
 	public validateToken(token: string | undefined) : Sessions | undefined{
 		const valid = this.sessions.find(e => e.token == token);
 		return valid;
-	}
-
-	public getLoggedUserData() : User {
-		return this.getUserData(this.sessionUserId);
 	}
 
 	public getUserData(id : number | undefined) : User {

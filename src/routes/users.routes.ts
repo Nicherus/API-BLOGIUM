@@ -9,10 +9,6 @@ import Session from 'src/models/Sessions';
 const usersRouter = Router();
 const usersRepository = new UsersRepository();
 
-export const getLoggedUserData = (): User => {
-	return usersRepository.getLoggedUserData();
-};
-
 export const getUserData = (id : number | undefined ): User => {
 	return usersRepository.getUserData(id);
 };
