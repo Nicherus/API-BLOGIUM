@@ -15,10 +15,9 @@ postsRouter.post('/', (request, response) => {
 	const {coverUrl, title, content} = request.body;
 	const token = request.headers['authorization'];
 	const sessionData =  validateToken(token);
-
 	const validation = postsRepository.validatePost(coverUrl, title, content);
 	const { error } = validation;
-
+	
 	if(error == null && sessionData){
 		const post = postsRepository.createPost(coverUrl, title, content, sessionData.id);
 		const user = getUserData(sessionData.id);
