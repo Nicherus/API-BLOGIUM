@@ -1,14 +1,14 @@
 
 class Session {
-    id: number;
+	userId: string;
 	token: string;
 
 	constructor(
-		id: number,
+		userId: string,
 		token: string, 
 	){
-		this.id = id;
 		this.token = token;
+		this.userId = userId;
 	}
 }
 
